@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "483894218145",
+    "project_id": "chamberlyab-65fbd",
+    "storage_bucket": "chamberlyab-65fbd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:483894218145:android:7424a609ce9606abe60fe0",
+        "android_client_info": {
+          "package_name": "com.example.chamberlyab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCe2jUSAzA3gDGv0imladTa-fsj-1BynpU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
