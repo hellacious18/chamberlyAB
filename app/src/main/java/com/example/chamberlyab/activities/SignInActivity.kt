@@ -12,6 +12,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.Firebase
+import com.google.firebase.appcheck.appCheck
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
@@ -23,6 +26,10 @@ class SignInActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        Firebase.appCheck.installAppCheckProviderFactory(
+            DebugAppCheckProviderFactory.getInstance(),
+        )
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
             val intent = Intent(this, MainActivity::class.java)
