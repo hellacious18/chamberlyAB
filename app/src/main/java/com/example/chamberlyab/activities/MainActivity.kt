@@ -1,14 +1,16 @@
-package com.example.chamberlyab
+package com.example.chamberlyab.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.example.chamberlyab.R
+import com.example.chamberlyab.activities.SignInActivity
+import com.example.chamberlyab.fragments.FeedFragment
+import com.example.chamberlyab.fragments.HistoryFragment
+import com.example.chamberlyab.fragments.HomeFragment
+import com.example.chamberlyab.fragments.ProfileFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -34,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        loadFragment(HomeFragment())
+        loadFragment(ProfileFragment())
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNav.setOnItemSelectedListener {
