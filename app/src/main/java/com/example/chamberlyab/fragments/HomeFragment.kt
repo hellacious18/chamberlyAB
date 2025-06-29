@@ -19,6 +19,7 @@ import com.google.firebase.ai.type.GenerativeBackend
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.launch
 
@@ -63,7 +64,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             .document(userEmail)
             .collection("messages")
             .orderBy("timestamp", Query.Direction.ASCENDING)
-            .addSnapshotListener { snapshot, error ->
+                //(MetadataChanges.INCLUDE) for caching
+            .addSnapshotListener(MetadataChanges.INCLUDE){ snapshot, error ->
                 if (error != null) {
                     Log.e(TAG, "Firestore error", error)
                     return@addSnapshotListener

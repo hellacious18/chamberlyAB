@@ -7,28 +7,22 @@ import com.google.firebase.appcheck.BuildConfig
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
 
-        val appCheck = FirebaseAppCheck.getInstance()
+        //Offline Caching (Firestore keeps a local copy of data you've read.
+            //Even if offline, your app can:
+            //Query documents.
+            //Display previous chat messages.)
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(true)
+            .build()
 
-        if (BuildConfig.DEBUG) {
-            appCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
-
-            // ✅ Correct way to retrieve the App Check debug token
-            appCheck.getAppCheckToken(false).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val token = task.result?.token
-                    Log.d("AppCheck", "Debug token: $token")
-                } else {
-                    Log.e("AppCheck", "Error getting App Check token", task.exception)
-                }
-            }
-        } else {
-            appCheck.installAppCheckProviderFactory(PlayIntegrityAppCheckProviderFactory.getInstance())
-        }
+        FirebaseFirestore.getInstance().firestoreSettings = settings
     }
 }
