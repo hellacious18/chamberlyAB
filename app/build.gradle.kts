@@ -52,6 +52,23 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation("com.google.firebase:firebase-auth:22.3.1")
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("com.github.bumptech.glide:glide:5.0.0-rc01")
+    implementation("com.google.firebase:firebase-ai")
+    implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
+
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    implementation("com.google.firebase:firebase-appcheck-playintegrity:18.0.0")
+    runtimeOnly("com.google.gms:google-services:4.4.2")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+    implementation("com.google.firebase:firebase-bom:33.9.0")
+    implementation("com.google.firebase:firebase-firestore:25.1.2")
+    implementation ("com.google.firebase:firebase-storage:20.3.0")
+    implementation ("com.google.firebase:firebase-appcheck-debug:17.1.0")
+    implementation("com.google.ai.client.generativeai:generativeai:0.1.1")
+
+    implementation("com.google.firebase:firebase-vertexai:16.1.0")
+
+
 }
