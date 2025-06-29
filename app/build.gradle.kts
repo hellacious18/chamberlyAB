@@ -69,6 +69,8 @@ dependencies {
     implementation("com.google.ai.client.generativeai:generativeai:0.1.1")
 
     implementation("com.google.firebase:firebase-vertexai:16.1.0")
+    implementation ("io.noties.markwon:core:4.6.2")
+
 
 
 }

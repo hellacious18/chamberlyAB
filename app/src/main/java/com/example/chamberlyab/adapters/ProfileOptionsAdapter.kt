@@ -1,8 +1,6 @@
 package com.example.chamberlyab.adapters
 
 import android.content.Context
-import android.graphics.Color.red
-import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +18,7 @@ class ProfileOptionsAdapter(
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: LayoutInflater.from(context)
-            .inflate(R.layout.list_item_profile, parent, false)
+            .inflate(R.layout.item_profile, parent, false)
 
         val icon = view.findViewById<ImageView>(R.id.itemIcon)
         val text = view.findViewById<TextView>(R.id.itemText)
