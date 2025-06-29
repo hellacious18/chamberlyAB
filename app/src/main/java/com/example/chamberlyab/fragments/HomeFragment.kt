@@ -19,7 +19,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private val TAG = "GeminiAI"
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
