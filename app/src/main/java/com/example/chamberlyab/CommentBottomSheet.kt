@@ -20,13 +20,16 @@ class CommentBottomSheet(private val postId: String, private val dreamText: Stri
     private val comments = mutableListOf<Comment>()
     private lateinit var adapter: CommentAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    private val commentKeys = mutableListOf<String>()
+
+
+     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = BottomSheetCommentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = CommentAdapter(comments)
+        adapter = CommentAdapter(comments, commentKeys, postId)
         binding.tvDreamText.text = dreamText
         binding.recyclerViewComments.adapter = adapter
         binding.recyclerViewComments.layoutManager = LinearLayoutManager(requireContext())
@@ -42,26 +45,29 @@ class CommentBottomSheet(private val postId: String, private val dreamText: Stri
         }
     }
 
-    private fun loadComments() {
-        val ref = FirebaseDatabase.getInstance().getReference("posts/$postId/comments")
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                comments.clear()
-                for (child in snapshot.children) {
-                    val comment = child.getValue(Comment::class.java)
-                    comment?.let { comments.add(it) }
-                }
-                comments.sortBy { it.timestamp }
-                adapter.notifyDataSetChanged()
-            }
+     private fun loadComments() {
+         val ref = FirebaseDatabase.getInstance().getReference("posts/$postId/comments")
+         ref.addValueEventListener(object : ValueEventListener {
+             override fun onDataChange(snapshot: DataSnapshot) {
+                 comments.clear()
+                 commentKeys.clear()
+                 for (child in snapshot.children) {
+                     val comment = child.getValue(Comment::class.java)
+                     if (comment != null) {
+                         comments.add(comment)
+                         commentKeys.add(child.key!!) // Add the comment's Firebase key
+                     }
+                 }
+                 adapter.notifyDataSetChanged()
+             }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Failed to load comments", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
+             override fun onCancelled(error: DatabaseError) {
+                 Toast.makeText(context, "Failed to load comments", Toast.LENGTH_SHORT).show()
+             }
+         })
+     }
 
-    private fun sendComment(text: String) {
+     private fun sendComment(text: String) {
         val user = FirebaseAuth.getInstance().currentUser ?: return
         val comment = Comment(
             userId = user.uid,

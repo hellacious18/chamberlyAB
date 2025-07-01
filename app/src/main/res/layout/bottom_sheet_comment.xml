@@ -52,7 +52,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:fontFamily="sans-serif-light"
             android:hint="Type a comment..."
             android:paddingHorizontal="12dp"
             android:paddingVertical="8dp"

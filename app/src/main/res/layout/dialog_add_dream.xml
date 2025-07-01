@@ -3,20 +3,29 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@drawable/input_bar_background"
+    android:padding="10dp"
+    android:layout_margin="10dp">
 
     <EditText
         android:id="@+id/etDreamText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@android:color/transparent"
         android:hint="Share your dream..."
-        android:minLines="3"
-        android:maxLines="5" />
+        android:minLines="3"/>
 
-    <Button
+    <TextView
         android:id="@+id/btnPostDream"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="15dp"
+        android:textSize="16sp"
         android:text="Post"
+        android:background="@drawable/user_message_bubble"
         android:layout_marginTop="12dp" />
 </LinearLayout>

@@ -1,10 +1,13 @@
 package com.example.chamberlyab.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,6 +40,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val conversationHistory = mutableListOf<Pair<String, String>>() // Pair<role, message>
     private var summaryContext: String = ""
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -57,7 +61,58 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 sendUserDream(dream)
             }
         }
+
+        val verticalMenu: ImageView = view.findViewById(R.id.verticalMenu)
+
+        verticalMenu.setOnClickListener {
+            val popup = PopupMenu(requireContext(), it)
+            popup.menuInflater.inflate(R.menu.vertical_menu, popup.menu)
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.action_delete -> {
+                        confirmDeleteChat()
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
+        }
+
     }
+
+    private fun confirmDeleteChat() {
+        AlertDialog.Builder(requireContext())
+            .setIcon(R.drawable.app_icon)
+            .setTitle("Delete Chat")
+            .setMessage("Are you sure you want to delete all messages?")
+            .setPositiveButton("Delete") { _, _ ->
+                deleteAllMessages()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun deleteAllMessages() {
+        val collectionRef = db.collection("dreamLogs")
+            .document(userEmail)
+            .collection("messages")
+
+        collectionRef.get()
+            .addOnSuccessListener { snapshot ->
+                val batch = db.batch()
+                for (doc in snapshot.documents) {
+                    batch.delete(doc.reference)
+                }
+                batch.commit().addOnSuccessListener {
+                    messages.clear()
+                    adapter.notifyDataSetChanged()
+                }.addOnFailureListener {
+                    Log.e(TAG, "Failed to delete messages", it)
+                }
+            }
+    }
+
 
     private fun loadMessages() {
         db.collection("dreamLogs")

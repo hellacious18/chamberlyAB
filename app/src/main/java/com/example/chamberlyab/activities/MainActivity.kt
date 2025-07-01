@@ -6,9 +6,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.chamberlyab.R
-import com.example.chamberlyab.activities.SignInActivity
 import com.example.chamberlyab.fragments.FeedFragment
-import com.example.chamberlyab.fragments.HistoryFragment
+import com.example.chamberlyab.fragments.ArchiveFragment
 import com.example.chamberlyab.fragments.HomeFragment
 import com.example.chamberlyab.fragments.ProfileFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -29,6 +28,14 @@ class MainActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        // 🔐 Redirect to login if not signed in
+        if (auth.currentUser == null) {
+            val intent = Intent(this, SignInActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -42,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_home -> loadFragment(HomeFragment())
-                R.id.nav_history -> loadFragment(HistoryFragment())
+                R.id.nav_archive -> loadFragment(ArchiveFragment())
                 R.id.nav_feed -> loadFragment(FeedFragment())
                 R.id.nav_profile -> loadFragment(ProfileFragment())
             }

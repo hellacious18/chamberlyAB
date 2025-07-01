@@ -58,6 +58,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.github.bumptech.glide:glide:5.0.0-rc01")
+
     implementation("com.google.firebase:firebase-ai")
     implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
 
@@ -74,6 +75,7 @@ dependencies {
     implementation("com.google.ai.client.generativeai:generativeai:0.1.1")
 
     implementation("com.google.firebase:firebase-database:21.0.0")
+    implementation("com.google.code.gson:gson:2.13.1")
 
     implementation("com.google.firebase:firebase-vertexai:16.1.0")
     implementation ("io.noties.markwon:core:4.6.2")

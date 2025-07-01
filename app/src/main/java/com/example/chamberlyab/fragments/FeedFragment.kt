@@ -1,8 +1,11 @@
 package com.example.chamberlyab.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,7 +15,12 @@ import com.example.chamberlyab.adapters.PostAdapter
 import com.example.chamberlyab.data.DreamPost
 import com.example.chamberlyab.databinding.FragmentFeedBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class FeedFragment : Fragment(R.layout.fragment_feed) {
 
@@ -20,6 +28,11 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
     private val binding get() = _binding!!
     private lateinit var adapter: PostAdapter
     private val posts = mutableListOf<DreamPost>()
+
+    private val gson = Gson()
+    private val sharedPrefs by lazy {
+        requireContext().getSharedPreferences("feed_cache", Context.MODE_PRIVATE)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +51,24 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
             AddDreamDialog().show(childFragmentManager, "AddDream")
         }
 
-        listenForPosts()
+        loadCachedPosts() // 👈 Load cached posts first
+        listenForPosts()  // 👈 Then listen for updates from Firebase
+    }
+
+    private fun loadCachedPosts() {
+        val json = sharedPrefs.getString("cached_posts", null)
+        if (!json.isNullOrEmpty()) {
+            val type = object : TypeToken<List<DreamPost>>() {}.type
+            val cached = gson.fromJson<List<DreamPost>>(json, type)
+            posts.clear()
+            posts.addAll(cached.shuffled()) // 👈 Randomize
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun cachePostsLocally(postList: List<DreamPost>) {
+        val json = gson.toJson(postList)
+        sharedPrefs.edit().putString("cached_posts", json).apply()
     }
 
     private fun listenForPosts() {
@@ -50,14 +80,17 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
                     val post = child.getValue(DreamPost::class.java)
                     post?.let { posts.add(it) }
                 }
-                posts.sortByDescending { it.timestamp }
+
+                posts.shuffle() // 👈 Randomize order every time
+                cachePostsLocally(posts) // 👈 Save to cache
                 adapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Failed to load comments", Toast.LENGTH_SHORT).show()
-                Log.e("COMMENTS", "Error loading comments: ${error.message}")
-            }        })
+                Toast.makeText(context, "Failed to load posts", Toast.LENGTH_SHORT).show()
+                Log.e("FEED", "Error loading posts: ${error.message}")
+            }
+        })
     }
 
     private fun toggleLike(post: DreamPost) {
@@ -82,4 +115,3 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
         _binding = null
     }
 }
-
