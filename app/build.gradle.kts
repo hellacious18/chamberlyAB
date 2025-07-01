@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -34,6 +35,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -67,6 +72,8 @@ dependencies {
     implementation ("com.google.firebase:firebase-storage:20.3.0")
     implementation ("com.google.firebase:firebase-appcheck-debug:17.1.0")
     implementation("com.google.ai.client.generativeai:generativeai:0.1.1")
+
+    implementation("com.google.firebase:firebase-database:21.0.0")
 
     implementation("com.google.firebase:firebase-vertexai:16.1.0")
     implementation ("io.noties.markwon:core:4.6.2")

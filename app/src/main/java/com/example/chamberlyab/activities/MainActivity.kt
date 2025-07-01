@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        loadFragment(HomeFragment())
+        loadFragment(FeedFragment())
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNav.setOnItemSelectedListener {
