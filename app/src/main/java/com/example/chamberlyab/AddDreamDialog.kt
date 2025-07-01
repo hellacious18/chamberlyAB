@@ -21,7 +21,6 @@ class AddDreamDialog : DialogFragment() {
         _binding = DialogAddDreamBinding.inflate(LayoutInflater.from(context))
 
         val builder = AlertDialog.Builder(requireContext())
-            .setTitle("Share your dream")
             .setView(binding.root)
             .setCancelable(true)
 
@@ -35,7 +34,9 @@ class AddDreamDialog : DialogFragment() {
             postDream(dreamText)
         }
 
-        return builder.create()
+        val dialog = builder.create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        return dialog
     }
 
     private fun postDream(dreamText: String) {
