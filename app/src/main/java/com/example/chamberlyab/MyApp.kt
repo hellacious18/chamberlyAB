@@ -1,28 +1,27 @@
 package com.example.chamberlyab
 
 import android.app.Application
-import android.util.Log
 import com.google.firebase.FirebaseApp
-import com.google.firebase.appcheck.BuildConfig
-import com.google.firebase.appcheck.FirebaseAppCheck
-import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.MemoryCacheSettings
 
+// Custom Application class to initialize Firebase and configure global app settings
 class MyApp : Application() {
+
     override fun onCreate() {
         super.onCreate()
+
+        // Initialize Firebase services for the app
         FirebaseApp.initializeApp(this)
 
-        //Offline Caching (Firestore keeps a local copy of data you've read.
-            //Even if offline, your app can:
-            //Query documents.
-            //Display previous chat messages.)
+        // Enable offline persistence for Firestore
+        // This allows Firestore to cache data locally so users can access previously loaded data even without internet
         val settings = FirebaseFirestoreSettings.Builder()
-            .setPersistenceEnabled(true)
+            .setLocalCacheSettings(MemoryCacheSettings.newBuilder().build()) // or PersistentCacheSettings
             .build()
 
+        // Apply the Firestore settings to the instance
         FirebaseFirestore.getInstance().firestoreSettings = settings
     }
 }

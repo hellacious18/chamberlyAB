@@ -7,7 +7,7 @@
 
     <item android:id="@+id/nav_archive"
         android:icon="@drawable/archive_24px"
-        android:title="History"/>
+        android:title="Archive"/>
 
     <item android:id="@+id/nav_feed"
         android:icon="@drawable/post_24px"
