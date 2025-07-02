@@ -26,7 +26,7 @@ import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.launch
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class AIFragment : Fragment(R.layout.fragment_home) {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var inputField: EditText

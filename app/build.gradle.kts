@@ -59,6 +59,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.github.bumptech.glide:glide:5.0.0-rc01")
 
+    implementation("androidx.fragment:fragment-ktx:1.5.7")
     implementation("com.google.firebase:firebase-ai")
     implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
 

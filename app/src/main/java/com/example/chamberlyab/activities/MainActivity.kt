@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.example.chamberlyab.R
 import com.example.chamberlyab.fragments.FeedFragment
 import com.example.chamberlyab.fragments.ArchiveFragment
-import com.example.chamberlyab.fragments.HomeFragment
+import com.example.chamberlyab.fragments.AIFragment
 import com.example.chamberlyab.fragments.ProfileFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -43,12 +43,12 @@ class MainActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        loadFragment(FeedFragment())
+        loadFragment(ArchiveFragment())
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNav.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.nav_home -> loadFragment(HomeFragment())
+                R.id.nav_home -> loadFragment(AIFragment())
                 R.id.nav_archive -> loadFragment(ArchiveFragment())
                 R.id.nav_feed -> loadFragment(FeedFragment())
                 R.id.nav_profile -> loadFragment(ProfileFragment())
