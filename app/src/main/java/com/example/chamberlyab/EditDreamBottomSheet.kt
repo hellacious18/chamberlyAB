@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -48,9 +49,18 @@ class EditDreamBottomSheet(
                     .document(date)
                     .set(mapOf("title" to title, "content" to content))
                     .addOnSuccessListener {
-                        fragmentManager.setFragmentResult("dream_updated", Bundle.EMPTY)
-                        dismiss()
+                        if (isAdded) {
+                            setFragmentResult("dream_updated", Bundle.EMPTY)
+                            dismiss()
+                        }
                     }
+
+                    .addOnFailureListener {
+                        if (isAdded) {
+                            Toast.makeText(requireContext(), "Failed to save dream: ${it.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
             }
         }
 

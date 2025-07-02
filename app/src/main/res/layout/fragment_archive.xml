@@ -19,26 +19,10 @@
         android:layout_margin="20dp"
         android:hint="Title Of Dream"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/editDream"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
-
-    <ImageView
-        android:id="@+id/editDream"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:src="@drawable/edit_24px"
-        app:layout_constraintEnd_toStartOf="@+id/deleteDream"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
-
-    <ImageView
-        android:id="@+id/deleteDream"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:src="@drawable/delete_24px"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendarView" />
 
     <TextView
@@ -47,8 +31,23 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:hint="Dream content goes here..."
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDreamTitle" />
+
+
+    <ImageView
+        android:id="@+id/ivOptionsMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:visibility="gone"
+        android:src="@drawable/vert_menu_24px"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

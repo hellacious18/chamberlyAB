@@ -129,6 +129,23 @@ class ProfileFragment: Fragment(R.layout.fragment_profile) {
         }.addOnFailureListener {
             Log.e("DELETE_USER", "Failed to delete posts", it)
         }
+
+        // Step 3: Delete all dreams under userDreams
+        val dreamsRef = db.collection("userDreams")
+            .document(userEmail)
+            .collection("dreams")
+
+        dreamsRef.get().addOnSuccessListener { snapshot ->
+            val batch = db.batch()
+            for (doc in snapshot.documents) {
+                batch.delete(doc.reference)
+            }
+            batch.commit().addOnSuccessListener {
+                Log.d("DELETE_USER", "User dreams deleted")
+            }.addOnFailureListener {
+                Log.e("DELETE_USER", "Failed to delete dreams", it)
+            }
+        }
     }
 
 }

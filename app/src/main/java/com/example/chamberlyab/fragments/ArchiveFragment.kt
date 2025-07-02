@@ -19,9 +19,7 @@ class ArchiveFragment: Fragment(R.layout.fragment_archive){
     private lateinit var calendarView: CalendarView
     private lateinit var tvDreamTitle: TextView
     private lateinit var tvDreamContent: TextView
-    private lateinit var editDream: ImageView
-    private lateinit var deleteDream: ImageView
-
+    private lateinit var ivOptionsMenu: ImageView
     private val db = FirebaseFirestore.getInstance()
     private var selectedDate = getTodayDate()
     private val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: "guest@example.com"
@@ -31,8 +29,7 @@ class ArchiveFragment: Fragment(R.layout.fragment_archive){
         calendarView = view.findViewById(R.id.calendarView)
         tvDreamTitle = view.findViewById(R.id.tvDreamTitle)
         tvDreamContent = view.findViewById(R.id.tvDreamContent)
-        editDream = view.findViewById(R.id.editDream)
-        deleteDream = view.findViewById(R.id.deleteDream)
+        ivOptionsMenu = view.findViewById(R.id.ivOptionsMenu)
 
         // Prevent future date selection visually
         calendarView.maxDate = System.currentTimeMillis()
@@ -50,31 +47,58 @@ class ArchiveFragment: Fragment(R.layout.fragment_archive){
                 tvDreamContent.text = ""
                 tvDreamTitle.hint = "Cannot log or view future dreams"
                 tvDreamContent.hint = "Please select today or a past date"
-                editDream.visibility = View.INVISIBLE
-                deleteDream.visibility = View.INVISIBLE
+                ivOptionsMenu.visibility = View.INVISIBLE
             } else {
                 selectedDate = selected
                 fetchDream(selectedDate)
+                ivOptionsMenu.visibility = View.VISIBLE
             }
         }
 
-        editDream.setOnClickListener {
-            val editSheet = EditDreamBottomSheet(
-                selectedDate,
-                tvDreamTitle.text.toString(),
-                tvDreamContent.text.toString()
-            )
-            editSheet.show(parentFragmentManager, "EditDreamSheet")
+        tvDreamTitle.setOnClickListener {
+            openEditBottomSheet()
         }
+
+        tvDreamContent.setOnClickListener {
+            openEditBottomSheet()
+        }
+
 
         parentFragmentManager.setFragmentResultListener("dream_updated", viewLifecycleOwner) { _, _ ->
             fetchDream(selectedDate) // Refresh dream content
         }
 
-        deleteDream.setOnClickListener {
-            confirmDelete()
+        ivOptionsMenu.setOnClickListener {
+            showOptionsMenu(it)
         }
     }
+
+    private fun showOptionsMenu(anchor: View) {
+        val popup = android.widget.PopupMenu(requireContext(), anchor)
+        popup.menuInflater.inflate(R.menu.vertical_menu, popup.menu)
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_delete -> {
+                    confirmDelete()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popup.show()
+    }
+
+    private fun openEditBottomSheet() {
+        val editSheet = EditDreamBottomSheet(
+            selectedDate,
+            tvDreamTitle.text.toString(),
+            tvDreamContent.text.toString()
+        )
+        editSheet.show(parentFragmentManager, "EditDreamSheet")
+    }
+
 
     private fun fetchDream(date: String) {
         db.collection("userDreams")
@@ -86,14 +110,13 @@ class ArchiveFragment: Fragment(R.layout.fragment_archive){
                 if (document != null && document.exists()) {
                     tvDreamTitle.text = document.getString("title") ?: ""
                     tvDreamContent.text = document.getString("content") ?: ""
-                    deleteDream.visibility = View.VISIBLE
-                    editDream.visibility = View.VISIBLE
+                    ivOptionsMenu.visibility = View.VISIBLE
                 } else {
                     tvDreamTitle.text = ""
                     tvDreamContent.text = ""
                     tvDreamTitle.hint = "Title Of Dream"
                     tvDreamContent.hint = "Dream content goes here..."
-                    deleteDream.visibility = View.INVISIBLE
+                    ivOptionsMenu.visibility = View.INVISIBLE
                 }
             }
     }
@@ -114,7 +137,7 @@ class ArchiveFragment: Fragment(R.layout.fragment_archive){
                         tvDreamContent.text = ""
                         tvDreamTitle.hint = "Title Of Dream"
                         tvDreamContent.hint = "Dream content goes here..."
-                        deleteDream.visibility = View.INVISIBLE
+                        ivOptionsMenu.visibility = View.INVISIBLE
                     }
             }
             .setNegativeButton("Cancel", null)
