@@ -76,7 +76,7 @@ Dream Weaver is an Android application designed to help users **log**, **reflect
 ## 📦 Download & Resources
 
 - 🔽 [Download APK] https://drive.google.com/drive/folders/1nmR0JpMrTgXBTGIP5EIBpwPlf4eINubM?usp=drive_link
-- 📄 [Ideation & Reference Docs] https://drive.google.com/drive/folders/1nmR0JpMrTgXBTGIP5EIBpwPlf4eINubM?usp=drive_link
+- 📄 [Ideation & Reference Docs & Screenshots] https://drive.google.com/drive/folders/1nmR0JpMrTgXBTGIP5EIBpwPlf4eINubM?usp=drive_link
 
 > *Note: You may need to enable installation from unknown sources on your Android device.*
 
