@@ -28,32 +28,42 @@ import kotlinx.coroutines.launch
 
 class AIFragment : Fragment(R.layout.fragment_ai) {
 
+    // UI components
     private lateinit var recyclerView: RecyclerView
     private lateinit var inputField: EditText
     private lateinit var sendButton: ImageButton
     private lateinit var adapter: ChatAdapter
+
+    // Message list for chat
     private val messages = mutableListOf<Message>()
 
+    // Firebase instances
     private val db = FirebaseFirestore.getInstance()
     private val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: "guest@example.com"
-    private val TAG = "DreamWeaverAI"
-    private val conversationHistory = mutableListOf<Pair<String, String>>() // Pair<role, message>
-    private var summaryContext: String = ""
 
+    // Logging tag
+    private val TAG = "DreamWeaverAI"
+
+    // Conversation context
+    private val conversationHistory = mutableListOf<Pair<String, String>>() // role, message
+    private var summaryContext: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize views
         recyclerView = view.findViewById(R.id.recylerViewHomeFragment)
         inputField = view.findViewById(R.id.inputField)
         sendButton = view.findViewById(R.id.sendButton)
 
+        // Setup RecyclerView and Adapter
         adapter = ChatAdapter(messages)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
-        loadMessages()
+        loadMessages() // Load previous messages from Firestore
 
+        // Send button click listener
         sendButton.setOnClickListener {
             val dream = inputField.text.toString().trim()
             if (dream.isNotEmpty()) {
@@ -62,8 +72,8 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
             }
         }
 
+        // Vertical menu (3-dot menu) setup
         val verticalMenu: ImageView = view.findViewById(R.id.verticalMenu)
-
         verticalMenu.setOnClickListener {
             val popup = PopupMenu(requireContext(), it)
             popup.menuInflater.inflate(R.menu.vertical_menu, popup.menu)
@@ -78,9 +88,9 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
             }
             popup.show()
         }
-
     }
 
+    // Show confirmation dialog before deleting all messages
     private fun confirmDeleteChat() {
         AlertDialog.Builder(requireContext())
             .setIcon(R.drawable.app_icon)
@@ -93,6 +103,7 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
             .show()
     }
 
+    // Delete all messages from Firestore
     private fun deleteAllMessages() {
         val collectionRef = db.collection("dreamLogs")
             .document(userEmail)
@@ -113,20 +124,20 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
             }
     }
 
-
+    // Load messages from Firestore in real-time
     private fun loadMessages() {
         db.collection("dreamLogs")
             .document(userEmail)
             .collection("messages")
             .orderBy("timestamp", Query.Direction.ASCENDING)
-                //(MetadataChanges.INCLUDE) for caching
-            .addSnapshotListener(MetadataChanges.INCLUDE){ snapshot, error ->
+            .addSnapshotListener(MetadataChanges.INCLUDE) { snapshot, error ->
                 if (error != null) {
                     Log.e(TAG, "Firestore error", error)
                     return@addSnapshotListener
                 }
 
                 messages.clear()
+
                 snapshot?.forEach { doc ->
                     val data = doc.data
                     val text = data["content"] as? String ?: ""
@@ -144,6 +155,7 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
             }
     }
 
+    // Handle sending a new user dream message
     private fun sendUserDream(dream: String) {
         val message = mapOf(
             "content" to dream,
@@ -151,6 +163,7 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
             "timestamp" to FieldValue.serverTimestamp()
         )
 
+        // Save user message to Firestore
         db.collection("dreamLogs")
             .document(userEmail)
             .collection("messages")
@@ -158,13 +171,14 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
             .addOnSuccessListener {
                 adapter.addMessage(Message(text = dream, isUser = true))
                 recyclerView.scrollToPosition(messages.size - 1)
-                interpretDream(dream)
+                interpretDream(dream) // Trigger AI interpretation
             }
             .addOnFailureListener {
                 Log.e(TAG, "Failed to send dream", it)
             }
     }
 
+    // Use Gemini AI to interpret the user's dream
     private fun interpretDream(dream: String) {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
@@ -172,7 +186,7 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
                     backend = GenerativeBackend.vertexAI()
                 ).generativeModel("gemini-2.5-flash")
 
-                // Set system prompt once
+                // Add initial system prompt if not set
                 if (conversationHistory.none { it.first == "system" }) {
                     conversationHistory.add(
                         "system" to """
@@ -183,10 +197,10 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
                     )
                 }
 
-                // Add new user input
+                // Add user's new dream to history
                 conversationHistory.add("user" to dream)
 
-                // Use only recent history
+                // Build context prompt for model (system + summary + last 4 messages)
                 val contextMessage = conversationHistory.first { it.first == "system" }.second
                 val recentTurns = conversationHistory.takeLast(4)
 
@@ -209,13 +223,14 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
 
                 Log.d(TAG, "Sending prompt to Gemini:\n$prompt")
 
+                // Get AI response from Gemini
                 val response = model.generateContent(prompt)
                 val reply = response.text ?: "I'm still pondering that dream. 💤"
 
-                // Add AI reply
+                // Add AI reply to history
                 conversationHistory.add("ai" to reply)
 
-                // Save to Firestore
+                // Save AI message to Firestore
                 val aiMessage = mapOf(
                     "content" to reply,
                     "role" to "ai",
@@ -227,10 +242,11 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
                     .collection("messages")
                     .add(aiMessage)
 
+                // Show AI message in chat
                 adapter.addMessage(Message(text = reply, isUser = false))
                 recyclerView.scrollToPosition(messages.size - 1)
 
-                // ⏱ Summarize if history is growing
+                // Summarize conversation if it's getting too long
                 val exchangeCount = conversationHistory.count { it.first == "user" || it.first == "ai" }
                 if (exchangeCount >= 6) {
                     val convoOnly = conversationHistory
@@ -246,7 +262,7 @@ class AIFragment : Fragment(R.layout.fragment_ai) {
                     val summaryResponse = model.generateContent(summarizationPrompt)
                     summaryContext = summaryResponse.text ?: summaryContext
 
-                    // Keep only system + last 2 turns
+                    // Reset history to keep it manageable (retain system + last 2 user/AI turns)
                     val lastFew = conversationHistory.takeLast(4)
                     conversationHistory.clear()
                     conversationHistory.add(conversationHistory.first { it.first == "system" })
